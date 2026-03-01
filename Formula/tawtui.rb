@@ -4,11 +4,11 @@
 class Tawtui < Formula
   desc "Terminal UI for Taskwarrior, GitHub PRs, and Google Calendar"
   homepage "https://github.com/victorstein/tawtui"
-  version "0.1.0"
+  version "0.1.1"
   license "MIT"
 
   url "https://github.com/victorstein/tawtui/releases/download/v#{version}/tawtui-darwin-arm64"
-  sha256 "7b048ea825bb2e39e77821fdb69b4f6ea0fc51eba0cbbb6a68b3e94fcb9e598f"
+  sha256 "159f9167c0dfc69ca849dd7e17a06943c30954f2823ab3930f241ec49370a0af"
 
   depends_on arch: :arm64
   depends_on :macos
