@@ -4,7 +4,7 @@
 class Tawtui < Formula
   desc "Terminal UI for Taskwarrior, GitHub PRs, and Google Calendar"
   homepage "https://github.com/victorstein/tawtui"
-  version "0.2.0"
+  version "0.2.1"
   license "MIT"
 
   url "https://github.com/victorstein/tawtui/releases/download/v#{version}/tawtui-darwin-arm64"
