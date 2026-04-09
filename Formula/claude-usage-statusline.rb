@@ -30,12 +30,19 @@ class ClaudeUsageStatusline < Formula
       "command" => "claude-usage-statusline",
     }
 
-    settings_path.write(JSON.pretty_generate(settings) + "\n")
+    content = JSON.pretty_generate(settings) + "\n"
+    File.open(settings_path.to_s, "w") { |f| f.write(content) }
+  rescue Errno::EPERM, Errno::EACCES
+    opoo "Could not auto-configure Claude Code settings (permission denied)."
+    opoo "Run from a regular terminal (not inside Claude Code):"
+    opoo "  brew postinstall victorstein/tap/claude-usage-statusline"
   end
 
   def caveats
     <<~EOS
       Claude Code has been configured automatically (#{Dir.home}/.claude/settings.json).
+      If the status line is missing, run from a regular terminal:
+        brew postinstall victorstein/tap/claude-usage-statusline
 
       Make sure you are logged into claude.ai in Google Chrome before starting
       a Claude Code session — cookies are extracted automatically on first run.
