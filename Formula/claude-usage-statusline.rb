@@ -3,8 +3,8 @@ class ClaudeUsageStatusline < Formula
   homepage "https://github.com/victorstein/claude-code-usage-statusline"
   license "MIT"
 
-  url "https://github.com/victorstein/claude-code-usage-statusline/archive/refs/tags/v0.0.1.tar.gz"
-  sha256 "a2fd4b01dd91cb77823aef99766cdfcc3bf3c505389c5dabbda37f3879d4c3e7"
+  url "https://github.com/victorstein/claude-code-usage-statusline/archive/refs/tags/v0.0.2.tar.gz"
+  sha256 "ec31795d187b39f4ecebba4127792144cb2c23122ac60f70b011659921afeb1e"
 
   depends_on :macos
   depends_on "python@3"
