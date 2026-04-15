@@ -41,6 +41,9 @@ class Tawtui < Formula
       Notification helper installed to:
         #{libexec}/TaWTUI Notify.app
 
+      If macOS blocks the notification helper, run:
+        xattr -cr #{libexec}/TaWTUI Notify.app
+
       Run `tawtui` to launch the setup wizard.
     EOS
   end
