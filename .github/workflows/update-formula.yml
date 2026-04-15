@@ -14,7 +14,7 @@ jobs:
       - name: Checkout tap
         uses: actions/checkout@v4
 
-      - name: Get release info
+      - name: Download checksums
         id: release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -24,13 +24,24 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-          # Download checksum files
-          curl -sL "https://github.com/victorstein/tawtui/releases/download/${TAG}/tawtui-darwin-arm64.sha256" -o checksum.txt
-          SHA256=$(awk '{print $1}' checksum.txt)
-          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+          gh release download "$TAG" \
+            --repo victorstein/tawtui \
+            --pattern "*.sha256" \
+            --dir checksums
 
-          curl -sL "https://github.com/victorstein/tawtui/releases/download/${TAG}/tawtui-notify-darwin-arm64.tar.gz.sha256" -o notify-checksum.txt
-          NOTIFY_SHA256=$(awk '{print $1}' notify-checksum.txt)
+          SHA256=$(awk '{print $1}' checksums/tawtui-darwin-arm64.sha256)
+          NOTIFY_SHA256=$(awk '{print $1}' checksums/tawtui-notify-darwin-arm64.tar.gz.sha256)
+
+          # Validate both are 64-char hex strings
+          for name in SHA256 NOTIFY_SHA256; do
+            val="${!name}"
+            if [[ ! "$val" =~ ^[a-f0-9]{64}$ ]]; then
+              echo "::error::Invalid checksum for $name: '$val'"
+              exit 1
+            fi
+          done
+
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
           echo "notify_sha256=$NOTIFY_SHA256" >> "$GITHUB_OUTPUT"
 
       - name: Update formula
@@ -39,11 +50,26 @@ jobs:
           SHA256: ${{ steps.release.outputs.sha256 }}
           NOTIFY_SHA256: ${{ steps.release.outputs.notify_sha256 }}
         run: |
-          sed -i "s/version \".*\"/version \"${VERSION}\"/" Formula/tawtui.rb
-          # Update main binary sha256 (first occurrence after url line)
-          sed -i "0,/sha256 \".*\"/{s/sha256 \".*\"/sha256 \"${SHA256}\"/}" Formula/tawtui.rb
-          # Update notify helper sha256 (the PLACEHOLDER or second sha256 in resource block)
-          sed -i "/resource \"notify-helper\"/,/end/{s/sha256 \".*\"/sha256 \"${NOTIFY_SHA256}\"/}" Formula/tawtui.rb
+          ruby -e '
+            f = File.read("Formula/tawtui.rb")
+            f.sub!(/version ".*?"/, "version \"#{ENV["VERSION"]}\"")
+            f.sub!(/\A(.*?)(sha256 ".*?")/m) { $1 + "sha256 \"#{ENV["SHA256"]}\"" }
+            f.sub!(/(resource "notify-helper".*?)(sha256 ".*?")/m) { $1 + "sha256 \"#{ENV["NOTIFY_SHA256"]}\"" }
+            File.write("Formula/tawtui.rb", f)
+          '
+
+      - name: Verify formula
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHA256: ${{ steps.release.outputs.sha256 }}
+          NOTIFY_SHA256: ${{ steps.release.outputs.notify_sha256 }}
+        run: |
+          formula=$(cat Formula/tawtui.rb)
+          errors=0
+          grep -q "version \"$VERSION\"" <<< "$formula" || { echo "::error::Version not updated"; errors=1; }
+          grep -q "sha256 \"$SHA256\"" <<< "$formula" || { echo "::error::Binary SHA not updated"; errors=1; }
+          grep -q "sha256 \"$NOTIFY_SHA256\"" <<< "$formula" || { echo "::error::Notify SHA not updated"; errors=1; }
+          exit $errors
 
       - name: Commit and push
         env:
