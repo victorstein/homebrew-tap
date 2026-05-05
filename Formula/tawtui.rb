@@ -4,15 +4,15 @@
 class Tawtui < Formula
   desc "Terminal UI for Taskwarrior, GitHub PRs, and Google Calendar"
   homepage "https://github.com/victorstein/tawtui"
-  version "0.2.8"
+  version "0.2.9"
   license "MIT"
 
-  url "https://github.com/victorstein/tawtui/releases/download/v0.2.8/tawtui-darwin-arm64"
-  sha256 "51e3f5ce300c23045f35cd5f1a24743026c6def810e916da4845abaee92c778b"
+  url "https://github.com/victorstein/tawtui/releases/download/v0.2.9/tawtui-darwin-arm64"
+  sha256 "455e0518095bde308df7e0f93b517f561ba52235fb6350e9969c3eba880f713d"
 
   resource "notify-helper" do
-    url "https://github.com/victorstein/tawtui/releases/download/v0.2.8/tawtui-notify-darwin-arm64.tar.gz"
-    sha256 "98580fef74dfbd6517f3accc55ca7273e7f5e8dabe68698d0582fe295a99833f"
+    url "https://github.com/victorstein/tawtui/releases/download/v0.2.9/tawtui-notify-darwin-arm64.tar.gz"
+    sha256 "747992e8219937c888091a994d4129414eb099bc0d50879b049c3308b038af1a"
   end
 
   depends_on arch: :arm64
