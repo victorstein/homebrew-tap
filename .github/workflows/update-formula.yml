@@ -53,6 +53,7 @@ jobs:
           ruby -e '
             f = File.read("Formula/tawtui.rb")
             f.sub!(/version ".*?"/, "version \"#{ENV["VERSION"]}\"")
+            f.gsub!(%r{/download/v\d+\.\d+\.\d+/}, "/download/v#{ENV["VERSION"]}/")
             f.sub!(/\A(.*?)(sha256 ".*?")/m) { $1 + "sha256 \"#{ENV["SHA256"]}\"" }
             f.sub!(/(resource "notify-helper".*?)(sha256 ".*?")/m) { $1 + "sha256 \"#{ENV["NOTIFY_SHA256"]}\"" }
             File.write("Formula/tawtui.rb", f)
@@ -69,6 +70,8 @@ jobs:
           grep -q "version \"$VERSION\"" <<< "$formula" || { echo "::error::Version not updated"; errors=1; }
           grep -q "sha256 \"$SHA256\"" <<< "$formula" || { echo "::error::Binary SHA not updated"; errors=1; }
           grep -q "sha256 \"$NOTIFY_SHA256\"" <<< "$formula" || { echo "::error::Notify SHA not updated"; errors=1; }
+          ! grep -q "/download/v#" <<< "$formula" || { echo "::error::URL still contains unresolved interpolation"; errors=1; }
+          grep -q "/download/v$VERSION/" <<< "$formula" || { echo "::error::URLs not pointing at v$VERSION"; errors=1; }
           exit $errors
 
       - name: Commit and push

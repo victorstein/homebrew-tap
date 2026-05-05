@@ -7,11 +7,11 @@ class Tawtui < Formula
   version "0.2.8"
   license "MIT"
 
-  url "https://github.com/victorstein/tawtui/releases/download/v#{version}/tawtui-darwin-arm64"
+  url "https://github.com/victorstein/tawtui/releases/download/v0.2.8/tawtui-darwin-arm64"
   sha256 "51e3f5ce300c23045f35cd5f1a24743026c6def810e916da4845abaee92c778b"
 
   resource "notify-helper" do
-    url "https://github.com/victorstein/tawtui/releases/download/v#{version}/tawtui-notify-darwin-arm64.tar.gz"
+    url "https://github.com/victorstein/tawtui/releases/download/v0.2.8/tawtui-notify-darwin-arm64.tar.gz"
     sha256 "98580fef74dfbd6517f3accc55ca7273e7f5e8dabe68698d0582fe295a99833f"
   end
 
